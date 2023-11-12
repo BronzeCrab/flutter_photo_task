@@ -80,25 +80,28 @@ class PhotoTaskPage extends StatefulWidget {
 }
 
 class _PhotoTaskPageState extends State<PhotoTaskPage> {
-  late CameraController _controller;
-  final myController = TextEditingController();
+  late CameraController _cameraController;
+  late Future<void> _initializeCameraControllerFuture;
+  final textFieldController = TextEditingController();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    myController.dispose();
+    textFieldController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    _controller = CameraController(
+    _cameraController = CameraController(
       widget.camera,
       // Define the resolution to use.
       ResolutionPreset.medium,
     );
-    _controller.initialize();
+
+    // Next, initialize the controller. This returns a Future.
+    _initializeCameraControllerFuture = _cameraController.initialize();
   }
 
   @override
@@ -115,13 +118,13 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
             child: Container(
               width: 300,
               height: 300,
-              child: CameraPreview(_controller),
+              child: CameraPreview(_cameraController),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(30.0),
             child: TextField(
-              controller: myController,
+              controller: textFieldController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter a comment',
@@ -135,9 +138,24 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
             ),
             onPressed: () async {
               var pos = await _determinePosition();
+
               print(pos.latitude);
               print(pos.longitude);
-              print(myController.text);
+              print(textFieldController.text);
+
+              // Take the Picture in a try / catch block. If anything goes wrong,
+              // catch the error.
+              try {
+                // Ensure that the camera is initialized.
+                await _initializeCameraControllerFuture;
+
+                // Attempt to take a picture and then get the location
+                // where the image file is saved.
+                final image = await _cameraController.takePicture();
+              } catch (e) {
+                // If an error occurs, log the error to the console.
+                print(e);
+              }
             },
             child: const Text('Post a photo, comment and loc.'),
           ),
