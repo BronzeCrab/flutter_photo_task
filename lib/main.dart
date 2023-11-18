@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 
 Future<Position> _determinePosition() async {
   bool serviceEnabled;
@@ -39,6 +42,26 @@ Future<Position> _determinePosition() async {
   return await Geolocator.getCurrentPosition();
 }
 
+Future<http.Response> postData(
+  String comment,
+  double latitude,
+  double longitude,
+  String photo,
+) {
+  return http.post(
+    Uri.parse('https://flutter-sandbox.free.beeceptor.com/upload_photo/'),
+    headers: <String, String>{
+      'Content-Type': 'application/javascript; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'comment': comment,
+      'latitude': latitude.toString(),
+      'longitude': longitude.toString(),
+      'photo': photo,
+    }),
+  );
+}
+
 main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
   // can be called before `runApp()`
@@ -54,7 +77,7 @@ main() async {
     MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
       home: PhotoTaskPage(
@@ -115,14 +138,14 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
         child: Column(children: [
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: Container(
+            child: SizedBox(
               width: 300,
               height: 300,
               child: CameraPreview(_cameraController),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(30.0),
             child: TextField(
               controller: textFieldController,
               decoration: const InputDecoration(
@@ -138,20 +161,17 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
             ),
             onPressed: () async {
               var pos = await _determinePosition();
-
-              print(pos.latitude);
-              print(pos.longitude);
-              print(textFieldController.text);
-
               // Take the Picture in a try / catch block. If anything goes wrong,
               // catch the error.
               try {
                 // Ensure that the camera is initialized.
                 await _initializeCameraControllerFuture;
-
                 // Attempt to take a picture and then get the location
                 // where the image file is saved.
                 final image = await _cameraController.takePicture();
+                final res = await postData(textFieldController.text,
+                    pos.latitude, pos.longitude, image.path);
+                print(res);
               } catch (e) {
                 // If an error occurs, log the error to the console.
                 print(e);
