@@ -45,14 +45,14 @@ Future<http.StreamedResponse> postData(
   String comment,
   double latitude,
   double longitude,
-  String photo_path,
+  String photoPath,
 ) async {
   var uri = Uri.https('flutter-sandbox.free.beeceptor.com', 'upload_photo/');
   var request = http.MultipartRequest('POST', uri)
     ..fields['comment'] = comment
     ..fields['latitude'] = comment
     ..fields['longitude'] = comment
-    ..files.add(await http.MultipartFile.fromPath('photo', photo_path,
+    ..files.add(await http.MultipartFile.fromPath('photo', photoPath,
         contentType: MediaType('image', 'jpeg')));
   var response = await request.send();
   return response;
@@ -168,9 +168,9 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
                 final res = await postData(textFieldController.text,
                     pos.latitude, pos.longitude, image.path);
                 print(res);
-                print(res.statusCode);
-                final resp_text = await res.stream.bytesToString();
-                print(resp_text);
+                print(res.statusCode == 201);
+                final respText = await res.stream.bytesToString();
+                print(respText);
               } catch (e) {
                 // If an error occurs, log the error to the console.
                 print(e);
