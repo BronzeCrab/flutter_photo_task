@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
+import 'my_dialog.dart';
+
 Future<Position> determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
@@ -167,10 +169,10 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
                 final image = await _cameraController.takePicture();
                 final res = await postData(textFieldController.text,
                     pos.latitude, pos.longitude, image.path);
-                print(res);
-                print(res.statusCode == 201);
                 final respText = await res.stream.bytesToString();
-                print(respText);
+                final respStatus = res.statusCode;
+
+                return await dialogBuilder(context, respText, respStatus);
               } catch (e) {
                 // If an error occurs, log the error to the console.
                 print(e);
