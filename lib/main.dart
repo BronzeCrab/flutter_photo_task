@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
-Future<Position> _determinePosition() async {
+Future<Position> determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
 
@@ -42,24 +41,21 @@ Future<Position> _determinePosition() async {
   return await Geolocator.getCurrentPosition();
 }
 
-Future<http.Response> postData(
+Future<http.StreamedResponse> postData(
   String comment,
   double latitude,
   double longitude,
-  String photo,
-) {
-  return http.post(
-    Uri.parse('https://flutter-sandbox.free.beeceptor.com/upload_photo/'),
-    headers: <String, String>{
-      'Content-Type': 'application/javascript; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'comment': comment,
-      'latitude': latitude.toString(),
-      'longitude': longitude.toString(),
-      'photo': photo,
-    }),
-  );
+  String photo_path,
+) async {
+  var uri = Uri.https('flutter-sandbox.free.beeceptor.com', 'upload_photo/');
+  var request = http.MultipartRequest('POST', uri)
+    ..fields['comment'] = comment
+    ..fields['latitude'] = comment
+    ..fields['longitude'] = comment
+    ..files.add(await http.MultipartFile.fromPath('photo', photo_path,
+        contentType: MediaType('image', 'jpeg')));
+  var response = await request.send();
+  return response;
 }
 
 main() async {
@@ -160,7 +156,7 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
               backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
             ),
             onPressed: () async {
-              var pos = await _determinePosition();
+              var pos = await determinePosition();
               // Take the Picture in a try / catch block. If anything goes wrong,
               // catch the error.
               try {
@@ -172,6 +168,9 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
                 final res = await postData(textFieldController.text,
                     pos.latitude, pos.longitude, image.path);
                 print(res);
+                print(res.statusCode);
+                final resp_text = await res.stream.bytesToString();
+                print(resp_text);
               } catch (e) {
                 // If an error occurs, log the error to the console.
                 print(e);
