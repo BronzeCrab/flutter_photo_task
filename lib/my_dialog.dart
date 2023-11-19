@@ -12,7 +12,7 @@ Future<void> dialogBuilder(
           child: ListBody(
             children: <Widget>[
               Text(respText),
-              Text(respStatus.toString()),
+              Text("code: ${respStatus.toString()}"),
             ],
           ),
         ),

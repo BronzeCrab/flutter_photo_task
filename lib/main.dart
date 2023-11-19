@@ -139,7 +139,18 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
             child: SizedBox(
               width: 300,
               height: 300,
-              child: CameraPreview(_cameraController),
+              child: FutureBuilder<void>(
+                future: _initializeCameraControllerFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    // If the Future is complete, display the preview.
+                    return CameraPreview(_cameraController);
+                  } else {
+                    // Otherwise, display a loading indicator.
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
             ),
           ),
           Padding(
