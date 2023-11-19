@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'my_dialog.dart';
 
@@ -71,16 +72,25 @@ main() async {
   // Get a specific camera from the list of available cameras.
   final firstCamera = cameras.first;
 
-  runApp(
-    MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: PhotoTaskPage(
-        title: 'Photo task',
-        camera: firstCamera,
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://ce907bd2574bff038a52f34cf9393de7@o109597.ingest.sentry.io/4506252569214976';
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(
+      MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
+        home: PhotoTaskPage(
+          title: 'Photo task',
+          camera: firstCamera,
+        ),
       ),
     ),
   );

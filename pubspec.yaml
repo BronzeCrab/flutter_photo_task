@@ -38,6 +38,7 @@ dependencies:
   camera: ^0.10.5+5
   geolocator: ^10.1.0
   http: ^1.1.0
+  sentry_flutter: ^7.13.1
 
 dev_dependencies:
   flutter_test:
