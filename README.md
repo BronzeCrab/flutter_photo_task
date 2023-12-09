@@ -4,7 +4,7 @@ This is small flutter project, it uses camera
 
 ## Getting Started
 
-Task was about t develop a mobile application for capturing photos from a camera
+Task was about to develop a mobile application for capturing photos from a camera
 
 The mobile application consists of one screen, with UI elements:
 
