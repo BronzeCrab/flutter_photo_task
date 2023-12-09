@@ -1,16 +1,14 @@
 # photo_task
 
-A new Flutter project.
+This is small flutter project, it uses camera
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Task was about t develop a mobile application for capturing photos from a camera
 
-A few resources to get you started if this is your first Flutter project:
+The mobile application consists of one screen, with UI elements:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Preview images from camera, Text input field for user comment,
+A button that, when clicked, sends a request to the server.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+When you click on the button, the application will determine the coordinates of the place where the camera is located, capture an image from the camera, take a comment from the text field and send this request to the server.
