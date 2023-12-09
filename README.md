@@ -1,8 +1,8 @@
-# photo_task
+# what is it? It's small photo_task
 
 This is small flutter project, it uses camera
 
-## Getting Started
+## About this project
 
 Task was about to develop a mobile application for capturing photos from a camera
 
